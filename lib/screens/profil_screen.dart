@@ -1,13 +1,37 @@
 import 'package:flutter/material.dart';
 import '../data/user_data.dart';
 import '../data/games_data.dart';
+import '../providers/favoris_notifier.dart';
 import '../widgets/game_card.dart';
 
-class ProfilScreen extends StatelessWidget {
+class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
 
   @override
+  State<ProfilScreen> createState() => _ProfilScreenState();
+}
+
+class _ProfilScreenState extends State<ProfilScreen> {
+  @override
+  void initState() {
+    super.initState();
+    FavorisNotifier.instance.addListener(_onLikesChanged);
+  }
+
+  @override
+  void dispose() {
+    FavorisNotifier.instance.removeListener(_onLikesChanged);
+    super.dispose();
+  }
+
+  void _onLikesChanged() => setState(() {});
+
+  @override
   Widget build(BuildContext context) {
+    final likedGames = gamesData
+        .where((g) => FavorisNotifier.instance.isFavori(g.id))
+        .toList();
+
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -23,6 +47,65 @@ class ProfilScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 16),
+                const Text(
+                  'Jeux aimés',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+        if (likedGames.isEmpty)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.favorite_border, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Text(
+                      'Aucun jeu aimé pour l\'instant',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 16.0,
+                crossAxisSpacing: 16.0,
+                childAspectRatio: 0.75,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => GameCard(game: likedGames[index]),
+                childCount: likedGames.length,
+              ),
+            ),
+          ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
                 const Text(
                   'Recommandations',
                   style: TextStyle(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/game.dart';
+import '../providers/favoris_notifier.dart';
 
 class GameDetailScreen extends StatelessWidget {
   final Game game;
@@ -20,10 +21,32 @@ class GameDetailScreen extends StatelessWidget {
             pinned: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
+            actions: [
+              ListenableBuilder(
+                listenable: FavorisNotifier.instance,
+                builder: (context, _) {
+                  final isFavori = FavorisNotifier.instance.isFavori(game.id);
+                  return Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        isFavori ? Icons.favorite : Icons.favorite_border,
+                        color: isFavori ? Colors.red : Colors.white,
+                      ),
+                      onPressed: () => FavorisNotifier.instance.toggleFavori(game.id),
+                    ),
+                  );
+                },
+              ),
+            ],
             leading: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
               child: IconButton(
@@ -47,7 +70,7 @@ class GameDetailScreen extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.5),
+                          Colors.black.withValues(alpha: 0.5),
                         ],
                       ),
                     ),
@@ -71,7 +94,6 @@ class GameDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Contenu
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/game.dart';
+import '../providers/favoris_notifier.dart';
 import '../screens/game_detail_screen.dart';
 
 class GameCard extends StatelessWidget {
@@ -44,7 +45,7 @@ class GameCard extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.5),
+                        Colors.black.withValues(alpha: 0.5),
                       ],
                     ),
                   ),
@@ -116,32 +117,57 @@ class GameCard extends StatelessWidget {
                   ),
                 Positioned(
                   bottom: 8,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => _navigateToDetail(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'Voir',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  left: 8,
+                  right: 50,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _navigateToDetail(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'Voir',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 8,
+                  right: 8,
+                  child: ListenableBuilder(
+                    listenable: FavorisNotifier.instance,
+                    builder: (context, _) {
+                      final isFavori = FavorisNotifier.instance.isFavori(game.id);
+                      return Material(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        shape: const CircleBorder(),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () => FavorisNotifier.instance.toggleFavori(game.id),
+                          child: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Icon(
+                              isFavori ? Icons.favorite : Icons.favorite_border,
+                              color: isFavori ? Colors.red : Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
