@@ -16,4 +16,16 @@ class Game {
     required this.price,
     this.isFree = false,
   });
+
+  factory Game.fromJson(Map<String, dynamic> json) {
+    return Game(
+      id: json['id'] as int,
+      title: json['title'] as String,
+      description: json['description'] as String,
+      imageUrl: json['image_url'] as String,
+      genre: json['genre'] as String,
+      price: (json['price'] as num).toDouble(),
+      isFree: json['is_free'] as bool? ?? false,
+    );
+  }
 }

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/boutique_screen.dart';
 import 'screens/profil_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://llcaxpkppksotdqvtoen.supabase.co',
+    publishableKey: 'sb_publishable_lkxoZ7y7U37-55iAQck90A_iIPDa8jo',
+  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
