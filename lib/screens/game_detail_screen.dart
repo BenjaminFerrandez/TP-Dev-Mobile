@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/game.dart';
 
-class GameDetailScreen extends StatelessWidget {
+class GameDetailScreen extends StatefulWidget {
   final Game game;
 
   const GameDetailScreen({
@@ -10,7 +11,24 @@ class GameDetailScreen extends StatelessWidget {
   });
 
   @override
+  State<GameDetailScreen> createState() => _GameDetailScreenState();
+}
+
+class _GameDetailScreenState extends State<GameDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _saveLastViewed();
+  }
+
+  Future<void> _saveLastViewed() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('last_viewed', widget.game.title);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final game = widget.game;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -23,7 +41,7 @@ class GameDetailScreen extends StatelessWidget {
             leading: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
               child: IconButton(
@@ -47,7 +65,7 @@ class GameDetailScreen extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.5),
+                          Colors.black.withValues(alpha: 0.5),
                         ],
                       ),
                     ),
@@ -71,7 +89,6 @@ class GameDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Contenu
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
